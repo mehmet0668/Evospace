@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/demiurge-project/ARGoS3-NEAT",
+  "tag": "v1.0-evspa",
+  "commit": "ab57a3fe2e80a54a912953f201542eef3132de63",
+  "version_doi": "https://doi.org/10.5281/zenodo.5893320",
+  "source_origin": "Official supplementary Code.tar.gz; byte-identical sources to the previous replay build.",
+  "source_archive_sha256": "b73e32f53d7e6297214473e8dd110313320bcc3702364c841b914208e9a12306"
+}

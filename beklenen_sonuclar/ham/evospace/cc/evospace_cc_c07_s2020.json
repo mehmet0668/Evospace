@@ -1,0 +1,26 @@
+{
+  "task": "cc",
+  "genome_row_zero_based": 6,
+  "seed": 2020,
+  "command": [
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/build/NEAT-launch",
+    "-c",
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/configs/cc_g6_s2020.xml",
+    "-g",
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/genomes/cc/gen_6",
+    "-s",
+    "2020"
+  ],
+  "config": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/configs/cc_g6_s2020.xml",
+  "config_sha256": "f469e78a82d383343cba05bd287b335ba777df9dbdcd0aac1a960a03ff3e576c",
+  "genome": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/genomes/cc/gen_6",
+  "genome_sha256": "5ef81aa080ca89547415459e33255f842db6487a8952fca78bfb2958b313bb98",
+  "log": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/logs/cc_g6_s2020.txt",
+  "log_sha256": "b2868a03218ca213f30c1e924875e9c481774ec059c59af8b4048555ec8d06ae",
+  "exit_code": 0,
+  "score": 380.162,
+  "wall_seconds": 1.5033008499999596,
+  "success": true,
+  "simulated_seconds": 120,
+  "ticks": 1200
+}

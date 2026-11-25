@@ -1,0 +1,26 @@
+{
+  "task": "apc",
+  "genome_row_zero_based": 7,
+  "seed": 2011,
+  "command": [
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/build/NEAT-launch",
+    "-c",
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/configs/apc_g7_s2011.xml",
+    "-g",
+    "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/genomes/apc/gen_7",
+    "-s",
+    "2011"
+  ],
+  "config": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/configs/apc_g7_s2011.xml",
+  "config_sha256": "ae0f54b69c3b54335b4ed72413479d89142736f04b257575f739f7d58af1eb4b",
+  "genome": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/genomes/apc/gen_7",
+  "genome_sha256": "212ea4e7c161be6bcaffbac54919a5ffaae9e0e7d730c5dfbecd832d2d4e54ac",
+  "log": "/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/confirmation/logs/apc_g7_s2011.txt",
+  "log_sha256": "96299955ef670a7db91d6a7ec2eaf29d40822c547da2b55cd4c1da7aa3ace24c",
+  "exit_code": 0,
+  "score": 89.4014,
+  "wall_seconds": 0.49856759599992984,
+  "success": true,
+  "simulated_seconds": 120,
+  "ticks": 1200
+}

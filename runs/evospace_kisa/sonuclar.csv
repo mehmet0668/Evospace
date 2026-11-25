@@ -1,0 +1,4 @@
+﻿method,task,row,seed,score,success,ground,camera,wall_seconds
+evospace,apc,1,2001,90.0363,True,cold,original,0.7397433149999415
+evospace,cc,1,2001,409.594,True,cold,original,2.102222342999994
+evospace,nc,1,2001,776.466,True,cold,original,1.8695637380001244

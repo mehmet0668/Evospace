@@ -1,0 +1,23 @@
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_media.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_genericrobot.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3core_simulator.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_epuck.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_eyebot.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_dynamics2d.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3_demiurge_epuck_dao.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_spiri.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_footbot.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_pointmass3d.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_entities.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3_demiurge_loop_functions.so"
+[INFO] Not using threads
+[INFO] Using random seed = 4023
+[INFO] Using simulation clock tick = 0.1
+[INFO] Total experiment length in clock ticks = 1200
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/build/mate/src/libautomode.so"
+[INFO] Loaded library "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/build/metrics/loop-functions/mate/NC/libmate_nc_loopfunc.so"
+[INFO] The physics engine "dyn2d" will perform 10 iterations per tick (dt = 0.01 sec)
+[INFO] No visualization selected.
+Score: 692.033
+Score 692.033
+

@@ -1,0 +1,179 @@
+PINNED AUTOMODE REFERENCE BUILD KIT
+
+Purpose
+-------
+Rebuild the original ARGoS generation and the saved-controller executors used in
+the accompanying validation. The source archives in sources/ are original files,
+not repackaged working directories. Their SHA-256 hashes, versions, public URLs,
+roles and available license-notice paths are in sources/manifest.json. Original
+copyright and license notices are retained inside the archives, including source
+file headers where there is no standalone license file.
+
+Prerequisites
+-------------
+* A Linux or other compatible Unix environment. This kit was actually checked on
+  Linux x86-64; Windows and macOS were not tested.
+* Python 3.9 or newer (standard library only for bootstrap_reference.py).
+* A C++ compiler supporting C++11, GNU make, and pkg-config.
+* CMake 3.x. The tested executable is CMake 3.27.9. CMake 4 is intentionally
+  rejected because these historical projects declare old minimum policy levels.
+* Standard POSIX development headers/libraries, pthreads and dynamic loading.
+
+The tested compiler is g++ (Debian 14.2.0-19) 14.2.0. Qt, Lua and documentation
+generation are disabled for this headless C++ reference build. Camera sensing is
+still built and used; disabling the camera GUI does not disable the sensor.
+
+The bootstrap never uses sudo, modifies /etc, installs operating-system packages,
+or writes to a system prefix. It does not download dependencies. A CMake executable
+can be supplied explicitly if the one on PATH is unsuitable. If a prerequisite
+is absent, arrange it in your own environment before running the script.
+
+Build
+-----
+From the extracted package directory:
+
+  python scripts/bootstrap_reference.py --jobs 4
+
+By default all extracted sources, builds, installed libraries and logs go under
+the package's runtime/ directory. To place them elsewhere:
+
+  python scripts/bootstrap_reference.py --runtime-dir /path/to/runtime \
+      --cmake /path/to/cmake-3.27/bin/cmake --jobs 4
+
+Archive validation/extraction and patch inspection without compiling:
+
+  python scripts/bootstrap_reference.py --runtime-dir /path/to/runtime \
+      --extract-only
+
+The script verifies every bundled archive hash, preserves Unix symlinks from ZIP
+entries, and builds seven stages in order: ARGoS beta48, e-puck 48, DAO 89f605c,
+task metrics 5525fcd, Mate a088773, Chocolate 5fcfcbd (RM1.2), and historical
+Chocolate f17a1936214cfbf2412951b29257a38a0d74fbaa (RM1.1). The two Chocolate
+versions have distinct source/build directories and executors; they are not
+silently interchanged. Controller libraries are not installed over one another.
+
+All builds use Release, C++11, a private installation prefix, no ld.so.conf update,
+no documentation, and no host-specific native optimization. No full optimization
+campaign is started by the bootstrap.
+
+Exactly three compatibility edits
+---------------------------------
+These edits are made only to extracted runtime copies. Original ZIPs are never
+modified. Before compiling, the script checks every archived source file and
+rejects differences outside these three CMake files.
+
+1. e-puck src/CMakeLists.txt: put the extension's own include directory BEFORE
+   installed core headers. This resolves an e-puck entity-header collision.
+2. e-puck src/plugins/robots/e-puck/CMakeLists.txt: guard the optional VisionTools
+   camera GUI include with if(QT_FOUND). Headless camera sensing remains compiled.
+3. metrics loop-functions/CMakeLists.txt: omit only the unrelated Gianduja target,
+   which depends on an absent external robots-thesis beacon header. Mate APC,
+   NC and CC scoring sources are unchanged.
+
+Restoring Unix symlinks such as src/argos3 -> . is archive extraction semantics,
+not an algorithm modification. Controller modules, FSM execution, robot dynamics,
+sensor noise implementations and scoring code are not edited.
+
+Runtime interface
+-----------------
+On success runtime/runtime.json contains absolute resolved paths for:
+
+  models.mate.binary / library / source_dir
+  models.chocolate_rm12.binary / library / source_dir
+  models.chocolate_rm11.binary / library / source_dir
+  metrics.apc / nc / cc
+  argos_binary, prefix, plugin_dir, original_xml_dir, source_dirs, irace_archive
+
+It also records compiler/CMake versions, timing and output binary SHA-256 hashes.
+The runtime paths are generated from the chosen location; there is no /workspace
+assumption. See the package replay command for loading the selected controller
+library and task config. If invoking an executor directly, set ARGOS_PLUGIN_PATH
+to plugin_dir and include plugin_dir plus that model's library directory in
+LD_LIBRARY_PATH. Adapt only the library paths in the XML, then pass the explicit
+seed and saved FSM using --seed and --fsm-config.
+
+For Chocolate, the embedded example FSM in the Mate XML contains behavior ID 6
+(formation), which Chocolate does not provide. A Chocolate config must also
+embed its selected published Chocolate FSM before initialization. This is a
+controller-selection adaptation, not a world/sensor/scorer modification.
+
+The build logs are under runtime/logs. archive_checks.json verifies inputs;
+build_only_patches.json records exact replacements; source_integrity_before_build.json
+checks archived source integrity; build_steps.json records every command and exit
+status. The bootstrap can be rerun in the same runtime directory for incremental
+builds, and rejects an archive mismatch or unexpected source modification.
+
+irace
+-----
+The original irace 2.2 source tarball is bundled and checksum-verified. This C++
+bootstrap does not install R or irace. Full optimizer replay needs a compatible R
+runtime and the separately documented runner/grammar settings. Saved-controller
+simulation does not require R. In particular, the archived generic target-runner
+negates every score, whereas APC is a minimization task; use the explicitly
+documented objective direction in the optimization workflow.
+
+Validation scope
+----------------
+The accompanying results distinguish compiled/runnable source, same-seed replay,
+saved-controller multi-seed performance, and optimization. Working executables do
+not by themselves reproduce a paper's historical seeds, training runs, real-robot
+measurements, or missing CC start-color allocation. Numerical discrepancies are
+preserved and reported rather than corrected by tuning the reference code.
+
+
+Fresh bootstrap verification actually performed
+---------------------------------------------
+The complete bootstrap was run from the original bundled archives into a new
+runtime directory, independently of the earlier working builds. All seven C++
+stages completed successfully with four build jobs. Total recorded configure,
+build and install wall time: 110.94 seconds. Archive-source integrity checked 1482
+files and found only the three declared CMake changes.
+
+The freshly rebuilt Mate executor then ran the published APC controller row 1
+at seed 1, with 20 robots and 120 simulated seconds. Exit status was 0 and
+score was 82.935, exactly matching the earlier reference replay. Wall time was
+0.718 seconds on this host. This single smoke run verifies the fresh build
+path; it is not a second complete 400-run experiment.
+
+Portable saved-controller replay CLI
+-----------------------------------
+The package data is read relative to the script, independently of the current
+working directory. The runtime manifest selects the freshly built executables.
+
+  python scripts/replay_reference.py --runtime runtime/runtime.json \
+      --method mate --task apc --controller 1 --seed 1 \
+      --output-dir replay/mate_apc
+
+  python scripts/replay_reference.py --runtime runtime/runtime.json \
+      --method chocolate_rm11 --task apc --controller 1 --seed 1 \
+      --output-dir replay/chocolate_apc
+
+  python scripts/replay_reference.py --runtime runtime/runtime.json \
+      --method mate --task cc --controller 1 --seed 1 --cc-start white \
+      --output-dir replay/mate_cc_white
+
+Each single run writes the concrete XML, complete command/environment, saved FSM,
+raw score, stdout/stderr log, hashes and metadata. World, sensor, actuator, media
+and physics settings are preserved. The chosen FSM is set both in the XML and on
+the command line, and -n disables visualization. Chocolate RM1.2 is explicitly
+labelled a diagnostic archived snapshot rather than the historical RM1.1 baseline.
+
+To repeat the 400-run protocol for one method:
+
+  python scripts/replay_reference.py --runtime runtime/runtime.json \
+      --method mate --batch --seeds 1:10 --workers 4 \
+      --output-dir replay/mate_all
+
+With no --task or --cc-start restriction, batch mode schedules ten controllers
+at ten seeds for APC, NC, CC-black and CC-white. --task restricts the task;
+--controller restricts the controller; --cc-start restricts CC to one start.
+Existing records with matching provenance are resumed; --overwrite reruns them.
+The program produces runs.csv, runs.json and summary.json in addition to per-run
+evidence. Repeated seeds are evaluations of the same saved controller, not new
+independent optimization runs.
+
+The three single-run commands above were checked using the freshly rebuilt
+runtime and package data: scores 82.935, 535.99 and 694.547, respectively, each
+exactly equal to its previous reference run. See provenance/fresh_build for the
+recorded evidence. The fresh-runtime 400-run batch command was not rerun solely
+for this packaging check; the already completed main batches are in data/.

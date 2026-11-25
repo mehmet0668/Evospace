@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+"""Mate/EvoSpace öğrenci paketi: özel Linux kurulumu, deney ve arşiv denetimi.
+
+Yalnızca Python standart kütüphanesini kullanır. Hazır denetleyicileri değerlendirir;
+irace veya EvoSpace optimizasyon kampanyasını başlatmaz.
+"""
+from __future__ import annotations
+import argparse
+import concurrent.futures as cf
+import csv
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import platform
+import re
+import shlex
+import shutil
+import statistics
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+
+ROOT = Path(__file__).resolve().parent
+TASKS = ('apc', 'nc', 'cc')
+FILENAMES = dict(zip(TASKS, ('anypoint_closseness.txt','networked_coverage.txt','conditional_coverage.txt')))
+
+def sha(p):
+    h=hashlib.sha256()
+    with Path(p).open('rb') as f:
+        for block in iter(lambda:f.read(1024*1024),b''): h.update(block)
+    return h.hexdigest()
+
+def read(p): return json.loads(Path(p).read_text(encoding='utf-8'))
+
+def save(p, data):
+    p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
+    tmp=p.with_suffix(p.suffix+'.tmp')
+    tmp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    tmp.replace(p)
+
+def score_from_log(text):
+    clean=re.sub(r'\x1b\[[0-9;]*m','',text)
+    # Executors can print both "Score: x" and the final machine-readable "Score x".
+    found=re.findall(r'^Score\s+([-+0-9.eE]+)\s*$',clean,re.M)
+    if len(found)!=1 or not math.isfinite(float(found[0])):
+        raise ValueError('Log içinde tek bir sonlu Score değeri bulunamadı.')
+    if 'FATAL' in clean or 'Error while casting' in clean:
+        raise ValueError('Simülatör hata bildirdi.')
+    return float(found[0])
+
+def linux_check():
+    if sys.version_info<(3,10): raise ValueError('Python 3.10 veya üzeri gerekiyor.')
+    if platform.system()!='Linux' or platform.machine() not in ('x86_64','amd64'):
+        raise ValueError('Simülasyon için Linux x86-64 gerekiyor. Windows: WSL2 Ubuntu kullanın. Arşiv kontrolü Windows üzerinde de çalışır.')
+    if any(c.isspace() or ord(c)>127 for c in str(ROOT)):
+        raise ValueError('Paketi boşluksuz, yalnızca ASCII karakterlerden oluşan bir Linux yoluna çıkarın; örnek: ~/mate_evospace. Eski -g ayrıştırıcısı boşlukları keser.')
+
+def integrity():
+    manifest=ROOT/'HASHES.sha256'
+    if not manifest.is_file(): raise ValueError('HASHES.sha256 eksik.')
+    count=0
+    for line in manifest.read_text(encoding='utf-8').splitlines():
+        digest, rel=line.split('  ',1)
+        path=ROOT/rel
+        if not path.resolve().is_relative_to(ROOT): raise ValueError('Güvensiz manifest yolu.')
+        if sha(path)!=digest: raise ValueError(f'Dosya bütünlüğü bozulmuş: {rel}')
+        count+=1
+    print(f'Bütünlük kontrolü: {count} dosyanın SHA-256 değeri doğru.',flush=True)
+    return count
+
+def archived():
+    integrity()
+    records=read(ROOT/'beklenen_sonuclar/index.json')
+    expected=read(ROOT/'beklenen_sonuclar/hedefler.json')
+    if len(records)!=2100: raise ValueError('Arşiv 2100 koşu içermeli.')
+    unique=set()
+    for r in records:
+        key=(r['method'],r['task'],r['row'],r['seed'])
+        if key in unique: raise ValueError(f'Tekrarlanan koşu: {key}')
+        unique.add(key)
+        for field in ('log','config','record','controller'):
+            if sha(ROOT/r[field])!=r[field+'_sha256']: raise ValueError(f'Hash uyuşmazlığı: {r[field]}')
+        original=read(ROOT/r['record'])
+        if not original['success'] or original['exit_code']!=0: raise ValueError('Başarısız tarihsel koşu.')
+        if original['score']!=r['score']: raise ValueError('Tarihsel kayıt puanı uyuşmuyor.')
+        if score_from_log((ROOT/r['log']).read_text(errors='replace'))!=r['score']:
+            raise ValueError('Log ile puan kaydı uyuşmuyor.')
+        tree=ET.parse(ROOT/r['config'])
+        experiment=tree.find('framework/experiment')
+        if experiment.get('length')!='120' or experiment.get('ticks_per_second')!='10' or int(experiment.get('random_seed'))!=r['seed']:
+            raise ValueError('Tarihsel zaman/seed ayarı uyuşmuyor.')
+        if tree.find('arena/distribute/entity').get('quantity')!='20': raise ValueError('Robot sayısı uyuşmuyor.')
+        if r['method']=='mate':
+            fsm=[x.strip() for x in (ROOT/r['controller']).read_text().splitlines() if x.strip()][r['row']-1]
+            if hashlib.sha256(fsm.encode()).hexdigest()!=original['fsm_sha256']: raise ValueError('FSM satırı uyuşmuyor.')
+            if tree.find('controllers/automode_controller/params').get('fsm-config')!=fsm: raise ValueError('XML FSM uyuşmuyor.')
+        elif sha(ROOT/r['controller'])!=original['genome_sha256']: raise ValueError('Genom uyuşmuyor.')
+    print('\nTarihsel simülasyon kayıtları doğrulanıyor; YENİ simülasyon başlatılmadı.')
+    print('Yöntem    Görev  n     Yayın ort.   Arşiv ort.   Mutlak bağıl fark')
+    for e in expected:
+        rs=[r for r in records if r['method']==e['method'] and r['task']==e['task']]
+        keys={(r['row'],r['seed']) for r in rs}
+        if keys!={(c,s) for c in range(1,11) for s in e['seeds']} or len(rs)!=e['n']:
+            raise ValueError('Denetleyici/seed ızgarası eksik veya farklı.')
+        col=0 if e['method']=='mate' else 4
+        table=(ROOT/'beklenen_sonuclar/yayin'/FILENAMES[e['task']]).read_text()
+        paper=statistics.mean(float(line.split()[col]) for line in table.splitlines() if line.strip())
+        mean=statistics.mean(r['score'] for r in rs)
+        error=100*abs(mean-paper)/abs(paper)
+        if not math.isclose(mean,e['archived_mean'],abs_tol=1e-9) or not math.isclose(paper,e['paper_mean'],abs_tol=1e-9):
+            raise ValueError('Yeniden hesaplanan ortalama hedef dosyasıyla uyuşmuyor.')
+        if not error<10: raise ValueError('Tarihsel ortalama %10 altında değil.')
+        print(f"{e['method']:9} {e['task'].upper():4} {len(rs):4} {paper:12.6f} {mean:12.6f} %{error:8.4f}")
+    print('SONUÇ: 2100/2100 tarihsel kayıt ve altı görev ortalaması doğrulandı.')
+    return 0
+
+def command_run(command):
+    print('Çalıştırılıyor: '+shlex.join(map(str,command)),flush=True)
+    subprocess.run(list(map(str,command)),check=True,cwd=ROOT)
+
+def setup(args):
+    linux_check();integrity()
+    for tool in ('g++','make','pkg-config',args.cmake):
+        if not shutil.which(tool): raise ValueError(f'Eksik derleme aracı: {tool}. README kurulum bölümüne bakın.')
+    command_run([sys.executable,ROOT/'betikler/bootstrap_reference.py','--runtime-dir',ROOT/'runtime/base','--jobs',str(args.jobs),'--cmake',args.cmake])
+    base=ROOT/'runtime/base/runtime.json'
+    command_run([sys.executable,ROOT/'betikler/build_cc_diagnostics.py','--runtime',base,'--out',ROOT/'runtime/warm'])
+    command_run([sys.executable,ROOT/'02_EvoSpace/build_replay.py','--base-runtime',base,'--out',ROOT/'runtime/evospace'])
+    r=read(base);prefix=Path(r['prefix']);camera_source=ROOT/'yamalar/canonical_camera.cpp'
+    original=Path(r['source_dirs']['epuck'])/'src/plugins/robots/e-puck/simulator/epuck_omnidirectional_camera_sensor.cpp'
+    if sha(original)!='e173741be3303e6d0fdc236f03da3d4b35d21c3c42613f680a6f861081e9f30b': raise ValueError('Beklenmeyen kamera tabanı.')
+    if sha(camera_source)!='b957d702d2b88fe8f8cf6485002345d3cfee26ae9a39f6ff48d581a5fcb0db43': raise ValueError('Beklenmeyen kanonik kamera kaynağı.')
+    out=ROOT/'runtime/canonical';out.mkdir(exist_ok=True)
+    command=['g++','-std=c++11','-Os','-fPIC','-shared','-DARGOS_simulator_BUILD','-I'+str(prefix/'include'),'-I'+str(original.parent),str(camera_source),'-o',str(out/'libcanonical_camera.so')]
+    with (out/'build.log').open('w') as stream:
+        result=subprocess.run(command,cwd=ROOT,stdout=stream,stderr=subprocess.STDOUT)
+    if result.returncode: raise ValueError('Kamera derlenemedi; runtime/canonical/build.log dosyasına bakın.')
+    # Freeze all newly built libraries/executors; never confuse these with historical binary hashes.
+    files=set(p for p in (ROOT/'runtime/base/prefix').rglob('*') if p.is_file())
+    files.update(Path(p) for p in r['binary_sha256'])
+    files.update((ROOT/'runtime/evospace').glob('*.so'))
+    files.update([ROOT/'runtime/evospace/NEAT-launch',out/'libcanonical_camera.so',ROOT/'runtime/warm/ground_warmstart_library/libargos3_demiurge_epuck_dao.so'])
+    files.update([base,ROOT/'runtime/evospace/runtime.json'])
+    save(ROOT/'runtime/ogrenci_runtime.json',{'root':str(ROOT),'setup_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'platform':platform.platform(),
+       'hashes':{str(p.relative_to(ROOT)):sha(p) for p in sorted(files)},'canonical_build_command':command,
+       'simulation_smoke_passed':False,'note':'Build success is separate from simulation smoke and full replay success.'})
+    print('Kurulum tamamlandı. Şimdi: python3 calistir.py deney --kisa --workers 2 --out runs/kisa_01')
+    return 0
+
+def configure(method,task,row,seed,r,e,destination):
+    if method=='mate':
+        original=ROOT/f'01_Mate/configs/original/mate_{task}.xml'
+        root=ET.parse(original).getroot()
+        controller=root.find('controllers/automode_controller')
+        controller.set('library',r['models']['mate']['library'])
+        fsms=[s.strip() for s in (ROOT/f'01_Mate/controllers/mate_{task}_fsm.txt').read_text().splitlines() if s.strip()]
+        if len(fsms)!=10: raise ValueError('On FSM bekleniyordu.')
+        fsm=fsms[row-1];controller.find('params').set('fsm-config',fsm)
+        if task!='nc':
+            controller.find('sensors/epuck_proximity').set('noise_level','0.05')
+            controller.find('sensors/epuck_light').set('noise_level','0.05')
+        if task=='cc': root.find('loop_functions/params').set('is_robots_black','false' if row<=5 else 'true')
+        control=ROOT/f'01_Mate/controllers/mate_{task}_fsm.txt'
+        command=[r['models']['mate']['binary'],'-n','-c',str(destination),'--seed',str(seed),'--fsm-config',*shlex.split(fsm)]
+    else:
+        original=ROOT/f'02_EvoSpace/source/experiments/mate/neat_{task}_visu.xml'
+        root=ET.parse(original).getroot()
+        visual=root.find('visualization')
+        if visual is not None: root.remove(visual)
+        controller=root.find('controllers')[0];old_id=controller.get('id')
+        controller.tag='nn_rm_3Dot1_controller';controller.set('id','nn_rm_3Dot1_controller');controller.set('library',e['library'])
+        for element in root.findall('.//arena//controller'):
+            if element.get('config')==old_id: element.set('config','nn_rm_3Dot1_controller')
+        control=ROOT/f'02_EvoSpace/genomes/{task}/gen_{row-1}'
+        command=[e['binary'],'-c',str(destination),'-g',str(control),'-s',str(seed)]
+    root.find('framework/experiment').set('random_seed',str(seed))
+    root.find('loop_functions').set('library',r['metrics'][task])
+    exp=root.find('framework/experiment')
+    if exp.get('length')!='120' or exp.get('ticks_per_second')!='10' or root.find('arena/distribute/entity').get('quantity')!='20':
+        raise ValueError('Beklenmeyen görev süresi/adım/robot sayısı.')
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    ET.ElementTree(root).write(destination,encoding='utf-8',xml_declaration=True)
+    return command,original,control
+
+def experiment(args):
+    linux_check();integrity()
+    rtpath=ROOT/'runtime/ogrenci_runtime.json'
+    rt=read(rtpath)
+    if rt['root']!=str(ROOT): raise ValueError('Derlenmiş paket taşınmış. Yeni konumda kur komutunu tekrar çalıştırın.')
+    for rel,digest in rt['hashes'].items():
+        if sha(ROOT/rel)!=digest: raise ValueError(f'Derleme girdisi değişmiş: {rel}. Yeni kurulum gerekir.')
+    r=read(ROOT/'runtime/base/runtime.json');e=read(ROOT/'runtime/evospace/runtime.json')
+    methods=['mate','evospace'] if args.method=='hepsi' else [args.method]
+    tasks=list(TASKS) if args.task=='hepsi' else [args.task]
+    expected=read(ROOT/'beklenen_sonuclar/hedefler.json')
+    targets={(x['method'],x['task']):x for x in expected}
+    out=Path(args.out).resolve()
+    if any(c.isspace() or ord(c)>127 for c in str(out)): raise ValueError('--out Linux yolu boşluksuz ASCII olmalı.')
+    out.mkdir(parents=True,exist_ok=True)
+    jobs=[]
+    for method in methods:
+        for task in tasks:
+            target=targets[(method,task)]
+            rows=[1] if args.kisa else list(range(1,11))
+            seeds=target['seeds'][:1] if args.kisa else target['seeds']
+            jobs.extend((method,task,c,s) for c in rows for s in seeds)
+    payload={'jobs':jobs,'runtime_sha256':sha(rtpath),'root':str(ROOT),'script_sha256':sha(Path(__file__)),
+       'package_manifest_sha256':sha(ROOT/'HASHES.sha256'),'quick':args.kisa,'optimization_run':False}
+    signature=hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()
+    planpath=out/'plan.json'
+    if planpath.exists():
+        if read(planpath)['signature']!=signature: raise ValueError('Bu çıktı dizininde farklı deney var. Yeni --out seçin.')
+    elif any(out.iterdir()): raise ValueError('Çıktı dizini boş olmalı veya aynı deneyin planını içermeli.')
+    save(planpath,{'signature':signature,'payload':payload,'created_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime())})
+    for sub in ('records','configs','logs'): (out/sub).mkdir(exist_ok=True)
+
+    def run(job):
+        method,task,row,seed=job;key=f'{method}_{task}_c{row:02d}_s{seed}'
+        dest=out/'records'/f'{key}.json';config=out/'configs'/f'{key}.xml';log=out/'logs'/f'{key}.log'
+        if dest.exists():
+            old=read(dest)
+            if old['signature']!=signature or old['config_sha256']!=sha(config) or old['log_sha256']!=sha(log):
+                raise ValueError(f'Kayıt değişmiş: {key}')
+            if old['success']: return old
+            raise ValueError(f'Önceki koşu başarısız: {key}. Logu inceleyip yeni --out seçin.')
+        command,original,control=configure(method,task,row,seed,r,e,config)
+        env=os.environ.copy()
+        for name in list(env):
+            if name.startswith(('LD_','MALLOC_','ARGOS_','TRACE_','DISABLE_TRACE')): env.pop(name,None)
+        env['ARGOS_PLUGIN_PATH']=r['plugin_dir']
+        env['LD_LIBRARY_PATH']=':'.join([e['build_dir'] if method=='evospace' else str(Path(r['models']['mate']['library']).parent),r['plugin_dir'],str(Path(r['prefix'])/'lib')])
+        target=targets[(method,task)]
+        if method=='mate':
+            env['LD_PRELOAD']=str(ROOT/('runtime/canonical/libcanonical_camera.so' if task=='nc' else 'runtime/warm/ground_warmstart_library/libargos3_demiurge_epuck_dao.so'))
+        start=time.monotonic()
+        try:
+            result=subprocess.run(command,cwd=out,env=env,capture_output=True,text=True,timeout=args.timeout)
+            text=result.stdout+'\n'+result.stderr;code=result.returncode
+        except subprocess.TimeoutExpired as ex:
+            def dec(value): return value.decode(errors='replace') if isinstance(value,bytes) else (value or '')
+            text=dec(ex.stdout)+'\n'+dec(ex.stderr)+'\nTIMEOUT';code='timeout'
+        log.write_text(text,encoding='utf-8')
+        error=None;score=None
+        try: score=score_from_log(text)
+        except ValueError as ex: error=str(ex)
+        clean=re.sub(r'\x1b\[[0-9;]*m','',text)
+        ticks=re.findall(r'Total experiment length in clock ticks = (\d+)',clean)
+        seeds=re.findall(r'Using random seed = (\d+)',clean)
+        # The ARGoS log reports configured duration, not telemetry of every PostStep.
+        success=code==0 and score is not None and ticks==['1200'] and seeds==[str(seed)]
+        record={'method':method,'task':task,'row':row,'seed':seed,'score':score,'success':success,
+          'exit_code':code,'error':error,'announced_ticks':ticks,'announced_seeds':seeds,'wall_seconds':time.monotonic()-start,
+          'signature':signature,'ground':target['ground'],'camera':target['camera'],'cc_start':target['cc_start'],
+          'command':command,'environment_overrides':{k:env[k] for k in ('ARGOS_PLUGIN_PATH','LD_LIBRARY_PATH','LD_PRELOAD') if k in env},
+          'config':str(config),'config_sha256':sha(config),'log':str(log),'log_sha256':sha(log),
+          'original_config_sha256':sha(original),'controller_sha256':sha(control),'optimization_run':False}
+        save(dest,record);return record
+
+    print(f"Plan: {len(jobs)} koşu; {'kısa işlev kontrolü' if args.kisa else 'tam sabit-denetleyici değerlendirmesi'}. Mevcut başarılı koşular aynı imzayla sürdürülür.",flush=True)
+    records=[]
+    with cf.ThreadPoolExecutor(max_workers=args.workers) as pool:
+        futures=[pool.submit(run,j) for j in jobs]
+        for future in cf.as_completed(futures):
+            rec=future.result();records.append(rec)
+            if len(records)%25==0 or not rec['success'] or args.kisa:
+                print(f"{len(records)}/{len(jobs)} | {rec['method']} {rec['task']} | score={rec['score']} | başarı={rec['success']}",flush=True)
+    records.sort(key=lambda x:(x['method'],x['task'],x['row'],x['seed']))
+    with (out/'sonuclar.csv').open('w',encoding='utf-8-sig',newline='') as stream:
+        fields=['method','task','row','seed','score','success','ground','camera','wall_seconds']
+        writer=csv.DictWriter(stream,fieldnames=fields,extrasaction='ignore');writer.writeheader();writer.writerows(records)
+    summaries=[]
+    for method in methods:
+        for task in tasks:
+            group=[x for x in records if x['method']==method and x['task']==task]
+            valid=[x['score'] for x in group if x['success']]
+            target=targets[(method,task)];complete=len(valid)==target['n'] and not args.kisa
+            mean=statistics.mean(valid) if valid else None
+            error=100*abs(mean-target['paper_mean'])/abs(target['paper_mean']) if mean is not None else None
+            summaries.append({'method':method,'task':task,'successful':len(valid),'planned':len(group),
+              'mean':mean,'paper_mean':target['paper_mean'],'archived_mean':target['archived_mean'],
+              'absolute_relative_error_percent':error,'full_cell':complete,'below_10_percent':bool(complete and error<10)})
+    all_success=all(x['success'] for x in records)
+    passed=all(x['below_10_percent'] for x in summaries) if not args.kisa else None
+    summary={'new_simulations':True,'quick_check':args.kisa,'runs':len(records),'all_successful':all_success,
+       'below_10_percent_all_selected_cells':passed,'signature':signature,'cells':summaries}
+    save(out/'ozet.json',summary)
+    print(json.dumps(summary,ensure_ascii=False,indent=2))
+    if args.kisa:
+        print('Kısa kontrol, %10 ortalama eşiğini değerlendirmez. Tam deney için --kisa kullanmayın.')
+    elif not passed:
+        print('En az bir hücre %10 eşiğini geçemedi. Sonuç korunmuştur; README sorun giderme bölümüne bakın.')
+    print('Çıktı: '+str(out/'ozet.json'))
+    return 0 if all_success and (args.kisa or passed) else 2
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    sub=parser.add_subparsers(dest='command',required=True)
+    sub.add_parser('arsiv-kontrol',help='2100 tarihsel koşuyu loglardan doğrula; simülasyon çalıştırmaz.')
+    sub.add_parser('butunluk',help='Dağıtılan dosyaların SHA-256 değerlerini kontrol et.')
+    s=sub.add_parser('kur',help='Linux x86-64 kaynak derlemesi; sudo/ağ erişimi kullanmaz.')
+    s.add_argument('--jobs',type=int,default=4);s.add_argument('--cmake',default='cmake')
+    r=sub.add_parser('deney',help='Hazır denetleyicilerle yeni simülasyon çalıştır.')
+    r.add_argument('--kisa',action='store_true',help='Seçilen hücre başına yalnızca 1 koşu; kabul testi değildir.')
+    r.add_argument('--method',choices=['hepsi','mate','evospace'],default='hepsi')
+    r.add_argument('--task',choices=['hepsi',*TASKS],default='hepsi')
+    r.add_argument('--out',default='runs/deney_01');r.add_argument('--workers',type=int,default=2)
+    r.add_argument('--timeout',type=int,default=180)
+    args=parser.parse_args()
+    if getattr(args,'jobs',1)<1 or getattr(args,'workers',1)<1 or getattr(args,'timeout',1)<1:
+        parser.error('jobs, workers ve timeout pozitif olmalı.')
+    if args.command=='arsiv-kontrol': return archived()
+    if args.command=='butunluk': integrity(); return 0
+    if args.command=='kur': return setup(args)
+    return experiment(args)
+
+if __name__=='__main__':
+    try: raise SystemExit(main())
+    except (ValueError,FileNotFoundError,subprocess.CalledProcessError) as error:
+        print('DURDURULDU: '+str(error),file=sys.stderr);raise SystemExit(1)

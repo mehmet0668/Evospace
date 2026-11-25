@@ -1,0 +1,7 @@
+﻿method,task,n,paper_mean,archived_mean,absolute_relative_error_percent,ground,camera,cc_start
+mate,apc,500,102.75371,99.9265136,2.751429997028809,warm,original,
+mate,nc,500,646.0437,692.18456,7.142064847935223,cold,canonical,
+mate,cc,500,735.8289,728.574574,0.9858713078543112,warm,original,"inferred row1-5:white,row6-10:black"
+evospace,apc,200,96.99193,93.1688865,3.941609884451209,cold,original,
+evospace,nc,200,682.7705,693.680035,1.5978333861817413,cold,original,
+evospace,cc,200,387.7309,394.19956,1.6683374990231625,cold,original,original XML random

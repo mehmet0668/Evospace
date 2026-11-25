@@ -1,0 +1,21 @@
+{
+  "created": "2026-11-24",
+  "historical_simulations_date": "2026-11-21",
+  "historical_successful_runs": 2100,
+  "fresh_linux_simulations_in_packaging_session": 0,
+  "packaging_host": "Windows; WSL inaccessible; CMake not installed",
+  "source_archives": {
+    "automode_mate2022_gece_arastirma.zip": "0ae56ccb3f41f4920ede9bc5ee7fedc0b447182c017d7c1f80f850d56296aeb0",
+    "automode_mate_evospace_ek_denetim_2026-11-21.zip": "9f60209f7d3834a16e6a4fbe290522bad6c86e690df7605b0cb25d5fa3da47ca",
+    "automode_mate_evospace_kontrol_2026-11-21.zip": "7f20f60dc3a83939eb4542c0509a8954afd296f7c930a4bf7e96420e1e970f2a",
+    "automode_reference_validation_2026-11-21.zip": "cf9e36d6b7dcdf8d96cac39d40d5d9a69181ba7121017dd5bc476113977a670b",
+    "Mate_EvoSpace_Tolerans_Deney_Kayitlari_2026-11-21.zip": "20e613518413e60712ac503dbce078da0a1bb5bebb4b5ce273cc145ae16ff0bb"
+  },
+  "packaging_changes": [
+    "Portable shared student CLI and Turkish guides.",
+    "Base bootstrap builds only Mate, omitting Chocolate stages.",
+    "Warm-ground and canonical-camera builds reuse previously audited source and commands.",
+    "No changes to FSMs, ANN weights, task scoring, sensor noise, or task geometry."
+  ],
+  "scope": "Saved-controller replay, not a new optimization campaign or native Windows simulator."
+}

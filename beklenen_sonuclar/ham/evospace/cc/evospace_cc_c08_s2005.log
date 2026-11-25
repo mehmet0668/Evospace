@@ -1,0 +1,44 @@
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_genericrobot.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_media.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_pointmass3d.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_dynamics2d.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_epuck.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_eyebot.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_entities.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_spiri.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3_demiurge_epuck_dao.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3plugin_simulator_footbot.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3core_simulator.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/lib/argos3/libargos3_demiurge_loop_functions.so[0m[1;32m"[0m
+[1;32m[INFO] Not using threads[0m
+[1;32m[INFO] Using random seed = [0m[1;32m2005[0m
+[1;32m[INFO] Using simulation clock tick = [0m[1;32m0.1[0m
+[1;32m[INFO] Total experiment length in clock ticks = [0m[1;32m1200[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/mate_next_choice/evospace/build/libnn_rm_3Dot1.so[0m[1;32m"[0m
+[1;32m[INFO] Loaded library "[0m[1;32m/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/build/metrics/loop-functions/mate/CC/libmate_cc_loopfunc.so[0m[1;32m"[0m
+[1;32m[INFO] The physics engine "[0m[1;32mdyn2d[0m[1;32m" will perform [0m[1;32m10[0m[1;32m iterations per tick (dt = [0m[1;32m0.01[0m[1;32m sec)[0m
+[1;32m[INFO] No visualization selected.[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;31mWarning: no genome file specified in .argos[0m
+[1;32mScore: [0m[1;32m376.904[0m
+Score 376.904
+[0m[0m

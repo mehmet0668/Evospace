@@ -1,0 +1,23 @@
+{
+  "purpose": "Causal diagnostic: canonical (robotID, LEDindex) order before assigning camera noise. Not claimed to match historical allocation order.",
+  "original_source": "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/source/epuck/argos3-epuck-48/src/plugins/robots/e-puck/simulator/epuck_omnidirectional_camera_sensor.cpp",
+  "original_source_sha256": "e173741be3303e6d0fdc236f03da3d4b35d21c3c42613f680a6f861081e9f30b",
+  "source": "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/canonical_camera.cpp",
+  "source_sha256": "b957d702d2b88fe8f8cf6485002345d3cfee26ae9a39f6ff48d581a5fcb0db43",
+  "library": "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/libcanonical_camera.so",
+  "library_sha256": "3097f29cbfee504f4462f9f098d2c871d7ba9b308192617719040b32e54075cc",
+  "command": [
+    "g++",
+    "-std=c++11",
+    "-Os",
+    "-fPIC",
+    "-shared",
+    "-DARGOS_simulator_BUILD",
+    "-I/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/include",
+    "-I/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/source/epuck/argos3-epuck-48/src/plugins/robots/e-puck/simulator",
+    "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/canonical_camera.cpp",
+    "-o",
+    "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/libcanonical_camera.so"
+  ],
+  "frozen_modified": false
+}

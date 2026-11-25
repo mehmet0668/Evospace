@@ -1,0 +1,46 @@
+{
+  "new_simulations": true,
+  "quick_check": true,
+  "runs": 3,
+  "all_successful": true,
+  "below_10_percent_all_selected_cells": null,
+  "signature": "1009022ac7b49a1893892db0bffb71e9f5fb19d2e0c79a85628d1df22a4aba30",
+  "cells": [
+    {
+      "method": "evospace",
+      "task": "apc",
+      "successful": 1,
+      "planned": 1,
+      "mean": 90.0363,
+      "paper_mean": 96.99193,
+      "archived_mean": 93.1688865,
+      "absolute_relative_error_percent": 7.171349204000785,
+      "full_cell": false,
+      "below_10_percent": false
+    },
+    {
+      "method": "evospace",
+      "task": "nc",
+      "successful": 1,
+      "planned": 1,
+      "mean": 776.466,
+      "paper_mean": 682.7705,
+      "archived_mean": 693.680035,
+      "absolute_relative_error_percent": 13.722839519282106,
+      "full_cell": false,
+      "below_10_percent": false
+    },
+    {
+      "method": "evospace",
+      "task": "cc",
+      "successful": 1,
+      "planned": 1,
+      "mean": 409.594,
+      "paper_mean": 387.7309,
+      "archived_mean": 394.19956,
+      "absolute_relative_error_percent": 5.638730366860102,
+      "full_cell": false,
+      "below_10_percent": false
+    }
+  ]
+}

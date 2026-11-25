@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='utf-8'?>
+<argos-configuration>
+  
+  
+  
+  <framework>
+    <experiment length="120" ticks_per_second="10" random_seed="1022" />
+  </framework>
+
+  
+  
+  
+  <loop_functions library="/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/build/metrics/loop-functions/mate/APC/libmate_apc_loopfunc.so" label="mate_apc_loop_functions">
+   <params dist_radius="1.2" number_robots="20" />
+  </loop_functions>
+
+  
+  
+  
+  <controllers>
+	
+    <automode_controller id="automode" library="/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/build/mate/src/libautomode.so">
+      <actuators>
+                    <epuck_wheels implementation="default" noise_std_dev="0.05" />
+                    <epuck_rgb_leds implementation="default" medium="leds" />
+                    <epuck_range_and_bearing implementation="medium" medium="rab" data_size="2" range="0.4" />
+      </actuators>
+      <sensors>
+                    <epuck_proximity implementation="default" show_rays="false" noise_level="0.05" calibrated="false" />
+                    <epuck_light implementation="default" show_rays="false" noise_level="0.05" calibrated="false" />
+                    <epuck_ground implementation="rot_z_only" noise_level="0.0" calibrated="false" />
+                    <epuck_range_and_bearing implementation="medium" medium="rab" show_rays="false" data_size="2" noise_std_dev="0.1" real_range_noise="false" loss_probability="0.85" calibrated="false" />
+                    <epuck_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="false" noise_std_dev="0.04" calibrated="false" />
+      </sensors>
+    <params readable="false" history="false" hist-folder="./fsm-history" fsm-config="--nstates 4 --s0 0 --rwm0 81 --n0 4 --n0x0 2 --c0x0 4 --p0x0 9 --w0x0 16.57 --n0x1 2 --c0x1 4 --p0x1 2 --w0x1 10.68 --n0x2 2 --c0x2 5 --p0x2 0.7 --n0x3 2 --c0x3 4 --p0x3 2 --w0x3 6.26 --s1 3 --n1 3 --n1x0 0 --c1x0 4 --p1x0 5 --w1x0 4.36 --n1x1 1 --c1x1 0 --p1x1 0.38 --n1x2 0 --c1x2 2 --p1x2 0.35 --s2 6 --dij2 20 --n2 1 --n2x0 2 --c2x0 1 --p2x0 0.65 --s3 6 --dij3 12 --n3 4 --n3x0 1 --c3x0 5 --p3x0 0.86 --n3x1 1 --c3x1 3 --p3x1 1 --w3x1 8.68 --n3x2 1 --c3x2 0 --p3x2 0.64 --n3x3 2 --c3x3 0 --p3x3 0.3" />
+    </automode_controller>
+  </controllers>
+
+  
+  
+  
+  <arena size="10, 10, 1" center="0,0,0">
+
+  
+  <floor id="floor" source="loop_functions" pixels_per_meter="300" />
+
+ 
+ <light id="light" position="0, 1.5, 0.4" orientation="0,0,0" color="yellow" intensity="0.0" medium="leds" />
+
+  
+  <box id="wall_1" size="0.01,.66,0.08" movable="false">
+    <body position="-1.231,0,0" orientation="0,0,0" />
+  </box>
+  <box id="wall_2" size="0.01,.66,0.08" movable="false">
+    <body position="1.231,0,0" orientation="0,0,0" />
+  </box>
+  <box id="wall_3" size="0.01,.66,0.08" movable="false">
+    <body position="0,1.231,0" orientation="90,0,0" />
+  </box>
+  <box id="wall_4" size="0.01,.66,0.08" movable="false">
+    <body position="0,-1.231,0" orientation="90,0,0" />
+  </box>
+  <box id="wall_5" size="0.01,.66,0.08" movable="false">
+    <body position="-.615,-1.066,0" orientation="60,0,0" />
+  </box>
+  <box id="wall_6" size="0.01,.66,0.08" movable="false">
+    <body position="-1.066,-.615,0" orientation="30,0,0" />
+  </box>
+  <box id="wall_7" size="0.01,.66,0.08" movable="false">
+    <body position=".615,1.066,0" orientation="60,0,0" />
+  </box>
+  <box id="wall_8" size="0.01,.66,0.08" movable="false">
+    <body position="1.066,.615,0" orientation="30,0,0" />
+  </box>
+  <box id="wall_9" size="0.01,.66,0.08" movable="false">
+    <body position="-.615,1.066,0" orientation="-60,0,0" />
+  </box>
+  <box id="wall_10" size="0.01,.66,0.08" movable="false">
+    <body position="-1.066,.615,0" orientation="-30,0,0" />
+  </box>
+  <box id="wall_11" size="0.01,.66,0.08" movable="false">
+    <body position=".615,-1.066,0" orientation="-60,0,0" />
+  </box>
+  <box id="wall_12" size="0.01,.66,0.08" movable="false">
+    <body position="1.066,-.615,0" orientation="-30,0,0" />
+  </box>
+
+  
+  
+  
+
+  <distribute>
+    <position method="uniform" min="-1,-1,0" max="1,1,0" />
+    <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
+    <entity quantity="20" max_trials="100">
+      <e-puck id="epuck">
+        <controller config="automode" />
+      </e-puck>
+    </entity>
+  </distribute>
+
+
+  </arena>
+
+  
+  
+  
+  <physics_engines>
+    <dynamics2d id="dyn2d" />
+  </physics_engines>
+
+  
+  
+  
+  <media>
+    <led id="leds" grid_size="1,1,1" />
+    <range_and_bearing id="ircom" />
+    <range_and_bearing id="rab" />
+  </media>
+
+  
+  
+  
+  <visualization>
+
+  </visualization>
+
+</argos-configuration>

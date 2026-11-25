@@ -1,0 +1,14 @@
+{
+  "date": "2026-11-24",
+  "historical_records": 2100,
+  "regenerated_xml_semantically_equal_to_archived_configs": 2100,
+  "raw_logs_parsed_and_scores_equal": 2100,
+  "invalid_log_rejection_cases": 5,
+  "portable_python_scripts_ast_valid": 4,
+  "word_content_matches_readme": true,
+  "word_tables": 5,
+  "fresh_linux_build": false,
+  "fresh_linux_simulations": 0,
+  "word_render_visual_check": false,
+  "linux_readiness_note": "New common wrapper is structurally tested; previous Linux simulations are archived. Fresh Linux smoke/full replay remains to be run on a Linux host."
+}

@@ -1,0 +1,56 @@
+--- a/src/plugins/robots/e-puck/simulator/epuck_omnidirectional_camera_sensor.cpp
++++ b/src/plugins/robots/e-puck/simulator/epuck_omnidirectional_camera_sensor.cpp
+@@ -5,6 +5,8 @@
+  * @author Lorenzo Garattoni - <lgaratto@ulb.ac.be>
+  */
+ #include "epuck_omnidirectional_camera_sensor.h"
++#include <algorithm>
++#include <cstdlib>
+ #include <argos3/core/simulator/simulator.h>
+ #include <argos3/core/simulator/space/positional_indices/positional_index.h>
+ #include <argos3/core/simulator/entity/composable_entity.h>
+@@ -188,6 +190,27 @@
+ /****************************************/
+ /****************************************/
+ 
++class StableLEDCollector : public CPositionalIndex<CLEDEntity>::COperation {
++ public:
++  CLEDEntity* items[1024]; unsigned count=0;
++  bool operator()(CLEDEntity& led) override {
++   if(count>=1024) std::abort();
++   items[count++]=&led; return true;
++  }
++};
++static bool StableLEDLess(CLEDEntity* a,CLEDEntity* b) {
++ const std::string& ar=a->GetRootEntity().GetId();
++ const std::string& br=b->GetRootEntity().GetId();
++ if(ar!=br) {
++  if(ar.compare(0,5,"epuck")==0 && br.compare(0,5,"epuck")==0)
++   return std::atoi(ar.c_str()+5)<std::atoi(br.c_str()+5);
++  return ar<br;
++ }
++ const std::string& ai=a->GetId(); const std::string& bi=b->GetId();
++ if(ai.compare(0,4,"led_")==0 && bi.compare(0,4,"led_")==0)
++  return std::atoi(ai.c_str()+4)<std::atoi(bi.c_str()+4);
++ return ai<bi;
++}
+ void CEPuckOmnidirectionalCameraSensor::Update() {
+     if(m_bEnabled) {
+         /* Increase data counter */
+@@ -199,12 +222,15 @@
+         /* Prepare the operation */
+         m_pcOperation->Setup(fGroundHalfRange);
+         /* Go through LED entities in box range */
++        StableLEDCollector collector;
+         m_pcLEDIndex->ForEntitiesInBoxRange(
+                     CVector3(cCameraPos.GetX(),
+                              cCameraPos.GetY(),
+                              cCameraPos.GetZ() * 0.5f),
+                     CVector3(fGroundHalfRange, fGroundHalfRange, cCameraPos.GetZ() * 0.5f),
+-                    *m_pcOperation);
++                    collector);
++        std::sort(collector.items,collector.items+collector.count,StableLEDLess);
++        for(unsigned i=0;i<collector.count;++i) (*m_pcOperation)(*collector.items[i]);
+     }
+ }
+ 

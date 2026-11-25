@@ -1,0 +1,41 @@
+{
+  "method": "evospace",
+  "task": "cc",
+  "row": 1,
+  "seed": 2001,
+  "score": 409.594,
+  "success": true,
+  "exit_code": 0,
+  "error": null,
+  "announced_ticks": [
+    "1200"
+  ],
+  "announced_seeds": [
+    "2001"
+  ],
+  "wall_seconds": 2.102222342999994,
+  "signature": "1009022ac7b49a1893892db0bffb71e9f5fb19d2e0c79a85628d1df22a4aba30",
+  "ground": "cold",
+  "camera": "original",
+  "cc_start": "original XML random",
+  "command": [
+    "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runtime/evospace/NEAT-launch",
+    "-c",
+    "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runs/evospace_kisa/configs/evospace_cc_c01_s2001.xml",
+    "-g",
+    "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/02_EvoSpace/genomes/cc/gen_0",
+    "-s",
+    "2001"
+  ],
+  "environment_overrides": {
+    "ARGOS_PLUGIN_PATH": "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runtime/base/prefix/lib/argos3",
+    "LD_LIBRARY_PATH": "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runtime/evospace:/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runtime/base/prefix/lib/argos3:/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runtime/base/prefix/lib"
+  },
+  "config": "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runs/evospace_kisa/configs/evospace_cc_c01_s2001.xml",
+  "config_sha256": "6e89030e6b44fd582fb3a1fea5899eff34fe6e179e58f904b79e81193b75ec2e",
+  "log": "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi/runs/evospace_kisa/logs/evospace_cc_c01_s2001.log",
+  "log_sha256": "0aebe5c12ee6a7118c82a328fcb1222bbc750fb73a502b44138e0f6e9753e682",
+  "original_config_sha256": "25754f4be3eb9571132dc11e98beaa3859e34035d2ebeff85abe2bfd52ca4a1c",
+  "controller_sha256": "db1fb5e4879663339b7fae7578c3d7667e7d47e5021f4bd8cc3b4fa54d70fa82",
+  "optimization_run": false
+}

@@ -1,0 +1,32 @@
+{
+  "signature": "1009022ac7b49a1893892db0bffb71e9f5fb19d2e0c79a85628d1df22a4aba30",
+  "payload": {
+    "jobs": [
+      [
+        "evospace",
+        "apc",
+        1,
+        2001
+      ],
+      [
+        "evospace",
+        "nc",
+        1,
+        2001
+      ],
+      [
+        "evospace",
+        "cc",
+        1,
+        2001
+      ]
+    ],
+    "runtime_sha256": "e3cb023d964595723f82e7e7cfacbe724e9689a3e89f6f2875bfe27c119fc33d",
+    "root": "/home/mehmet/tez_evospace/Mate_EvoSpace_Ogrenci_Paketi",
+    "script_sha256": "f01e95a8e4e728129e93c49c8e5ede9ac3a77dcec8479b9074a612116da31ca5",
+    "package_manifest_sha256": "c72bdf262ee85dd116bad95ddd11b7555816b8c66f618fc9af790eb4ac19c854",
+    "quick": true,
+    "optimization_run": false
+  },
+  "created_utc": "2026-11-25T07:26:29Z"
+}

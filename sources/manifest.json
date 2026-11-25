@@ -1,0 +1,103 @@
+{
+  "description": "Original pinned source archives; licenses retained inside the archives. Build scripts only modify extracted copies in the runtime directory.",
+  "sources": [
+    {
+      "id": "argos",
+      "filename": "argos3-3.0.0-beta48.zip",
+      "url": "https://zenodo.org/api/records/4889112/files/argos3-3.0.0-beta48.zip/content",
+      "version": "3.0.0-beta48",
+      "role": "core simulator",
+      "size_bytes": 16518479,
+      "sha256": "a39d784e5159b608bb713c45e3e7f3377ce109e5d475e648f1e1851a54adb8f4",
+      "md5": "10f70d3473270062a5c42fe74d699a5a",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "archive_root": "argos3-3.0.0-beta48",
+      "license_notice_paths_in_archive": [
+        "argos3-3.0.0-beta48/doc/ARGoS_LICENSE.txt",
+        "argos3-3.0.0-beta48/src/plugins/simulator/physics_engines/dynamics2d/chipmunk-physics/CHIPMUNK_LICENSE.txt"
+      ]
+    },
+    {
+      "id": "epuck",
+      "filename": "argos3-epuck-48.zip",
+      "url": "https://zenodo.org/api/records/4882715/files/argos3-epuck-48.zip/content",
+      "version": "48",
+      "role": "extended e-puck simulator",
+      "size_bytes": 12815708,
+      "sha256": "167f90aecf7f0aec4546af42467f2d5f136d22fef5d590a01d2c184011d0265e",
+      "md5": "49f3d854be08b137fe7eb5b132daa94a",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "archive_root": "argos3-epuck-48",
+      "license_notice_paths_in_archive": [
+        "argos3-epuck-48/LICENSE"
+      ]
+    },
+    {
+      "id": "dao",
+      "filename": "demiurge-epuck-dao-v1.0-dao.zip",
+      "url": "https://zenodo.org/api/records/5893406/files/demiurge-project/demiurge-epuck-dao-v1.0-dao.zip/content",
+      "version": "89f605c",
+      "role": "robot reference models",
+      "size_bytes": 17568,
+      "sha256": "48020df55a11e3d3f49925c0899c64e7f4247c58036c053b5ab09ca861072599",
+      "md5": "024ab8f78c28d0bf0133448161375487",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "archive_root": "demiurge-project-demiurge-epuck-dao-89f605c",
+      "zenodo_version_record": 5893406,
+      "license_notice_paths_in_archive": []
+    },
+    {
+      "id": "metrics",
+      "filename": "experiments-loop-functions-v1.0-mate.zip",
+      "url": "https://zenodo.org/api/records/5893411/files/demiurge-project/experiments-loop-functions-v1.0-mate.zip/content",
+      "version": "5525fcd",
+      "role": "original APC/NC/CC scorers",
+      "size_bytes": 67425,
+      "sha256": "5c8774758e02dbcf667534485ebef44d467f750e8160cce6be860e4dface4d00",
+      "md5": "84f3089d65a52d77d0a90c1fb9c56bc9",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "archive_root": "demiurge-project-experiments-loop-functions-5525fcd",
+      "zenodo_version_record": 5893411,
+      "license_notice_paths_in_archive": [
+        "demiurge-project-experiments-loop-functions-5525fcd/LICENSE"
+      ]
+    },
+    {
+      "id": "mate",
+      "filename": "ARGoS3-AutoMoDe-v1.0-mate.zip",
+      "url": "https://zenodo.org/api/records/5893277/files/demiurge-project/ARGoS3-AutoMoDe-v1.0-mate.zip/content",
+      "version": "a088773",
+      "role": "Mate PFSM executor",
+      "size_bytes": 72426,
+      "sha256": "40786c4d92fecea08cf64716291d373f95c919809ef71458fe1041dd4b26952d",
+      "md5": "fd0d4566b4029f97fc9288c91c97e901",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "archive_root": "demiurge-project-ARGoS3-AutoMoDe-a088773",
+      "zenodo_version_record": 5893277,
+      "license_notice_paths_in_archive": [
+        "demiurge-project-ARGoS3-AutoMoDe-a088773/LICENSE"
+      ]
+    },
+    {
+      "id": "irace",
+      "filename": "irace_2.2.tar.gz",
+      "url": "https://zenodo.org/api/records/4888997/files/irace_2.2.tar.gz/content",
+      "version": "2.2",
+      "role": "archived optimization tool; R required separately",
+      "size_bytes": 1113134,
+      "sha256": "26b24ae958bc0bfdeac80a9ef2c37ea1cb13f22d50eb766841f31673b5e1db63",
+      "md5": "1511ce8749b7b1bbd32e7a582577fc6c",
+      "upstream_md5_checked": true,
+      "archive_is_original": true,
+      "zenodo_version_record": 4888997,
+      "license_notice_paths_in_archive": [
+        "irace/man/irace-license.Rd"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "original_source": "/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/source/epuck/argos3-epuck-48/src/plugins/robots/e-puck/simulator/epuck_omnidirectional_camera_sensor.cpp",
+  "original_sha256": "e173741be3303e6d0fdc236f03da3d4b35d21c3c42613f680a6f861081e9f30b",
+  "patch": "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/stable_camera_order.patch",
+  "patch_sha256": "aa318ef485bd9623f40db738bce081747732e962e742fe77e0009cf022fcdbac",
+  "patched_source_sha256": "16d479102e921525958505e62d598267780e23bca9e18f25db12c1a6355b0ed8",
+  "dry_run_returncode": 0,
+  "compile_command": [
+    "g++",
+    "-std=gnu++11",
+    "-Os",
+    "-DNDEBUG",
+    "-fPIC",
+    "-DARGOS_simulator_BUILD",
+    "-I/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/prefix/include",
+    "-I/workspace/scratch/749f3458a7e3/tmp/reference_validation/portable_build/source/epuck/argos3-epuck-48/src/plugins/robots/e-puck/simulator",
+    "-c",
+    "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/source_patch_check/epuck_omnidirectional_camera_sensor.cpp",
+    "-o",
+    "/workspace/scratch/749f3458a7e3/tmp/overnight_mate2022/runtime_protocol/nc_warm_observer/canonical/source_patch_check/camera.o"
+  ],
+  "compile_returncode": 0,
+  "frozen_source_unchanged": true,
+  "simulation_validation": "Same helper and Update body as canonical_camera.cpp, validated by six logged pilot runs. Patched camera translation unit compiled successfully; full plugin not linked or executed in this check.",
+  "scope_limit": "Collector capacity1024 LED candidates, exceeding current20-robot benchmark; fail-fast if exceeded.",
+  "default_enabled": false
+}
